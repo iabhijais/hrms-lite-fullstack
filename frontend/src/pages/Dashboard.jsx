@@ -29,10 +29,11 @@ export default function Dashboard() {
 
     if (loading) return <LoadingState message="Loading dashboard..." />;
     if (error) return <ErrorState message={error} onRetry={fetchData} />;
+    if (!data) return <ErrorState message="No dashboard data available" onRetry={fetchData} />;
 
     const attendanceRate =
-        data.total_attendance_records > 0
-            ? Math.round((data.total_present / data.total_attendance_records) * 100)
+        (data.total_attendance_records || 0) > 0
+            ? Math.round(((data.total_present || 0) / data.total_attendance_records) * 100)
             : 0;
 
     return (
@@ -84,8 +85,8 @@ export default function Dashboard() {
                         </h2>
                     </div>
                     <div className="space-y-3">
-                        {Object.entries(data.department_breakdown).map(([dept, count]) => {
-                            const pct = Math.round((count / data.total_employees) * 100);
+                        {Object.entries(data.department_breakdown || {}).map(([dept, count]) => {
+                            const pct = data.total_employees > 0 ? Math.round((count / data.total_employees) * 100) : 0;
                             return (
                                 <div key={dept}>
                                     <div className="flex items-center justify-between mb-1.5">
@@ -116,11 +117,11 @@ export default function Dashboard() {
                             Present Days per Employee
                         </h2>
                     </div>
-                    {Object.keys(data.employee_present_days).length === 0 ? (
+                    {Object.keys(data.employee_present_days || {}).length === 0 ? (
                         <p className="text-sm text-surface-400 py-4 text-center">No attendance data yet</p>
                     ) : (
                         <div className="space-y-3">
-                            {Object.entries(data.employee_present_days)
+                            {Object.entries(data.employee_present_days || {})
                                 .sort(([, a], [, b]) => b - a)
                                 .map(([empId, days]) => (
                                     <div
