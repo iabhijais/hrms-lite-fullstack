@@ -52,13 +52,15 @@ cd hrms-lite-fullstack
 ```bash
 cd backend
 pip install -r requirements.txt
-uvicorn main:app --reload --port 8000
+python -m uvicorn main:app --reload --port 8000
 ```
 
 The API server starts at `http://localhost:8000`.  
 API documentation is available at `http://localhost:8000/docs` (Swagger UI).
 
 ### 3. Frontend Setup
+
+Open a new terminal:
 
 ```bash
 cd frontend
@@ -76,6 +78,29 @@ The database is auto-created on first run with 5 seeded employees and sample att
 
 ---
 
+## 🌍 Deployment Guide
+
+### Backend (Render / Railway)
+
+1. **Root Directory**: Set to `backend`
+2. **Build Command**: `pip install -r requirements.txt`
+3. **Start Command**: `python -m uvicorn main:app --host 0.0.0.0 --port $PORT`
+4. **Environment**: Python 3.10+
+
+*Note: The SQLite database is file-based. On ephemeral cloud hosting (like Render Free Tier), the database may reset on redeployments.*
+
+### Frontend (Vercel / Netlify)
+
+1. **Root Directory**: Set to `frontend`
+2. **Build Command**: `npm run build`
+3. **Output Directory**: `dist`
+4. **Environment Variables**:
+   - `VITE_API_URL`: Set this to your deployed backend URL (e.g., `https://your-backend.onrender.com`)
+
+*Note: A `vercel.json` file is included in the frontend directory to handle client-side routing.*
+
+---
+
 ## 📁 Project Structure
 
 ```
@@ -90,7 +115,7 @@ hrms-lite-fullstack/
 │   ├── src/
 │   │   ├── components/      # Reusable UI components
 │   │   │   ├── layout/      # Sidebar, MobileNav
-│   │   │   ├── ui/          # PageHeader, StatCard, StateDisplays, ConfirmDialog
+│   │   │   ├── ui/          # PageHeader, StatCard, StateDisplays, ConfirmDialog, ErrorBoundary
 │   │   │   ├── employees/   # EmployeeForm, EmployeeTable
 │   │   │   └── attendance/  # AttendanceForm, AttendanceTable
 │   │   ├── pages/           # Dashboard, Employees, Attendance
@@ -101,6 +126,7 @@ hrms-lite-fullstack/
 │   ├── index.html
 │   ├── vite.config.js
 │   ├── tailwind.config.js
+│   ├── vercel.json          # Deployment config
 │   └── package.json
 └── README.md
 ```
@@ -140,7 +166,7 @@ hrms-lite-fullstack/
 ## ⚠️ Assumptions & Limitations
 
 1. **Single admin user** — No authentication or role-based access control is implemented (as per requirements).
-2. **SQLite database** — Suitable for lightweight usage; for production scale, PostgreSQL or MySQL would be recommended.
+2. **SQLite database** — Suitable for lightweight usage.
 3. **Leave management, payroll** — Out of scope for this version.
 4. **CORS** — Configured to allow all origins for development/demo; should be restricted in production.
 5. **Deployment** — Environment variable `VITE_API_URL` should point to the deployed backend URL in production.
